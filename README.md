@@ -8,6 +8,6 @@ Using [Reveal.js](https://github.com/hakimel/reveal.js)
 Compile using:
 
 ```bash
-pandoc -t revealjs -s presentation.txt -o presentation.html
+pandoc -t revealjs -s presentation.md -o presentation.html
 ```
 
