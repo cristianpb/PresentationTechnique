@@ -1,6 +1,8 @@
-% Partage de connaissance
-% Cristian Perez
-% 28 février 2017
+---
+title: Partage de connais
+author: Cristian Perez
+date: 28 fevrier
+---
 
 ### Anatomy of an image classifier
 
