@@ -1,16 +1,13 @@
 ---
-title: Partage de connais
+title: Partage de connaissance
 author: Cristian Perez
-date: 28 fevrier
 ---
 
-### Anatomy of an image classifier
+# Anatomy of an image classifier
 
-![](images/image-classification-pipeline.jpg){ width=1000px }
+![](images/image-classification-pipeline.jpg){ width=100% }
 
-------------------
-
-#### Preprocessing 
+## Preprocessing 
 
 - Align (Detex) [1](http://docs.opencv.org/trunk/dd/d3b/tutorial_py_svm_opencv.html)
 [2](https://www.learnopencv.com/handwritten-digits-classification-an-opencv-c-python-tutorial/)
@@ -19,6 +16,14 @@ date: 28 fevrier
 - Color segmentation
     - Otsu [1]( http://www.bogotobogo.com/python/OpenCV_Python/python_opencv3_Image_Global_Thresholding_Adaptive_Thresholding_Otsus_Binarization_Segmentations.php )
 - Object detection 
+
+------------------
+
+## Feature Extraction
+
+- HOG
+- SIFT
+- SURF
 
 ------------------
 
@@ -46,7 +51,7 @@ if (a > 3) {
 }
 ```
 
-## Breakfast
+# Breakfast
 
 ~~~~~~~
 if (a > 3) {
