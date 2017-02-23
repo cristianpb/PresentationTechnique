@@ -69,33 +69,77 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <p class="author">Cristian Perez</p>
 </section>
 
-<section id="anatomy-of-an-image-classifier" class="slide level1">
-<h1>Anatomy of an image classifier</h1>
+<section id="anatomy-of-an-image-classifier" class="slide level2">
+<h2>Anatomy of an image classifier</h2>
 <figure>
 <img src="images/image-classification-pipeline.jpg" style="width:100.0%" />
 </figure>
-<h2 id="preprocessing">Preprocessing</h2>
-<ul>
-<li>Align (Detex) <a href="http://docs.opencv.org/trunk/dd/d3b/tutorial_py_svm_opencv.html">1</a> <a href="https://www.learnopencv.com/handwritten-digits-classification-an-opencv-c-python-tutorial/">2</a></li>
-<li>Histogram equalization <a href="http://docs.opencv.org/3.1.0/d5/daf/tutorial_py_histogram_equalization.html">1</a></li>
-<li>Color segmentation
+<aside class="notes">
+<p>This is my note. - It can contain Markdown - like this list</p>
+</aside>
+</section>
+<section><section id="preprocessing" class="titleslide slide level1"><h1>Preprocessing</h1></section><section id="align-detex" class="slide level2">
+<h2>Align (Detex)</h2>
+<p>Align image to a reference assits the classification algorithm</p>
+<figure>
+<img src="images/deskew1.jpg" style="height:100.0%" />
+</figure>
+<p><a href="http://docs.opencv.org/trunk/dd/d3b/tutorial_py_svm_opencv.html">1</a> <a href="https://www.learnopencv.com/handwritten-digits-classification-an-opencv-c-python-tutorial/">2</a></p>
+</section><section class="slide level2">
+
+<p>Deskewing simple grayscale images can be achieved using image moments (distance and intensity of pixels).</p>
+<aside class="notes">
+<p>Moments relate distance and intensity of the pixels</p>
+</aside>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> deskew(img):
+    m <span class="op">=</span> cv2.moments(img)
+    <span class="cf">if</span> <span class="bu">abs</span>(m[<span class="st">&#39;mu02&#39;</span>]) <span class="op">&lt;</span> <span class="fl">1e-2</span>:
+        <span class="co"># no deskewing needed. </span>
+        <span class="cf">return</span> img.copy()
+    <span class="co"># Calculate skew based on central momemts. </span>
+    skew <span class="op">=</span> m[<span class="st">&#39;mu11&#39;</span>]<span class="op">/</span>m[<span class="st">&#39;mu02&#39;</span>]
+    <span class="co"># Calculate affine transform to correct skewness. </span>
+    M <span class="op">=</span> np.float32([[<span class="dv">1</span>, skew, <span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>SZ<span class="op">*</span>skew], [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>]])
+    <span class="co"># Apply affine transform</span>
+    img <span class="op">=</span> cv2.warpAffine(img, M, (SZ, SZ), flags<span class="op">=</span>cv2.WARP_INVERSE_MAP <span class="op">|</span> cv2.INTER_LINEAR)
+    <span class="cf">return</span> img</code></pre></div>
+<aside class="notes">
+<p>People often think of a learning algorithm as a block box. In reality, you can assist the algorithm. If you are building a face recognition system, aligning the images to a reference face leads to improvement. A typical alignment operation uses a facial feature detector to align the eyes in every image.</p>
+<p>Pour le cas de digits, aligner les numéros améliore les résultats. L'inclination de l'écriture peut être corrigé. Ansi l'algorithme ne doit pas apprendre cette variation entre les chiffres.</p>
+<p>This deskewing of simple grayscale images can be achieved using image moments. OpenCV has an implementation of moments and it comes in handy while calculating useful information like centroid, area, skewness of simple images with black backgrounds.</p>
+<p>It turns out that a measure of the skewness is the given by the ratio of the two central moments ( mu11 / mu02 ). The skewness thus calculated can be used in calculating an affine transform that deskews the image.</p>
+</aside>
+</section><section id="histogram-equalization" class="slide level2">
+<h2>Histogram equalization</h2>
+<p>Adjust image contrast using the image's histogram.</p>
+<figure>
+<img src="images/histogram_equalization.png" style="width:100.0%" />
+</figure>
+</section><section class="slide level2">
+
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">img <span class="op">=</span> cv2.imread(<span class="st">&#39;wiki.jpg&#39;</span>,<span class="dv">0</span>)
+equ <span class="op">=</span> cv2.equalizeHist(img)
+res <span class="op">=</span> np.hstack((img,equ)) <span class="co">#stacking images side-by-side</span>
+cv2.imwrite(<span class="st">&#39;res.png&#39;</span>,res)</code></pre></div>
+<p><img src="images/histeq_numpy1.jpg" /> <img src="images/histeq_numpy2.jpg" /></p>
+<p><a href="http://docs.opencv.org/3.1.0/d5/daf/tutorial_py_histogram_equalization.html">1</a></p>
+</section><section class="slide level2">
+
+<h3 id="color-segmentation">Color segmentation</h3>
 <ul>
 <li>Otsu <a href="http://www.bogotobogo.com/python/OpenCV_Python/python_opencv3_Image_Global_Thresholding_Adaptive_Thresholding_Otsus_Binarization_Segmentations.php">1</a></li>
-</ul></li>
-<li>Object detection</li>
 </ul>
-</section>
-<section class="slide level1">
-
-<h2 id="feature-extraction">Feature Extraction</h2>
+<h3 id="object-detection">Object detection</h3>
+<p>Test</p>
+</section><section id="feature-extraction" class="slide level2">
+<h2>Feature Extraction</h2>
 <ul>
 <li>HOG</li>
 <li>SIFT</li>
 <li>SURF</li>
 </ul>
-</section>
-<section class="slide level1">
-
+</section><section id="test" class="slide level2">
+<h2>Test</h2>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="cf">if</span> (a <span class="op">&gt;</span> <span class="dv">3</span>) {
   moveShip(<span class="dv">5</span> <span class="op">*</span> gravity, DOWN)<span class="op">;</span>
 }
@@ -117,38 +161,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="cf">if</span> (a <span class="op">&gt;</span> <span class="dv">3</span>) {
   moveShip(<span class="dv">5</span> <span class="op">*</span> gravity, DOWN)<span class="op">;</span>
 }</code></pre></div>
-</section>
-<section id="breakfast" class="slide level1">
-<h1>Breakfast</h1>
-<pre><code>if (a &gt; 3) {
-  moveShip(5 * gravity, DOWN);
-}
-if (a &gt; 3) {
-  moveShip(5 * gravity, DOWN);
-}
-if (a &gt; 3) {
-  moveShip(5 * gravity, DOWN);
-}
-if (a &gt; 3) {
-  moveShip(5 * gravity, DOWN);
-}
-if (a &gt; 3) {
-  moveShip(5 * gravity, DOWN);
-}
-if (a &gt; 3) {
-  moveShip(5 * gravity, DOWN);
-}
-if (a &gt; 3) {
-  moveShip(5 * gravity, DOWN);
-}
-if (a &gt; 3) {
-  moveShip(5 * gravity, DOWN);
-}
-if (a &gt; 3) {
-  moveShip(5 * gravity, DOWN);
-}</code></pre>
-</section>
-<section class="slide level1">
+</section><section class="slide level2">
 
 <table>
 <thead>
@@ -172,8 +185,7 @@ if (a &gt; 3) {
 </tr>
 </tbody>
 </table>
-</section>
-<section class="slide level1">
+</section><section class="slide level2">
 
 <div style="white-space: pre-line;">The limerick packs laughs anatomical
 In space that is quite economical.
@@ -186,16 +198,14 @@ Berkeley, CA 94718</div>
 <li>Eat eggs</li>
 <li>Drink coffee</li>
 </ul>
-</section>
-<section id="in-the-evening" class="slide level1">
-<h1>In the evening</h1>
-<h2 id="dinner">Dinner</h2>
+</section></section>
+<section><section id="in-the-evening" class="titleslide slide level1"><h1>In the evening</h1></section><section id="dinner" class="slide level2">
+<h2>Dinner</h2>
 <p>This is an <a href="/url">inline link</a>, and here's <a href="http://fsf.org" title="click here for a good time!">one with a title</a>.</p>
-</section>
-<section class="slide level1">
+</section><section class="slide level2">
 
 <p>See <a href="http://foo.bar.baz">my website</a>.</p>
-</section>
+</section></section>
     </div>
   </div>
 
