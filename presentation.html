@@ -67,6 +67,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <section>
   <h1 class="title">Partage de connaissance</h1>
   <p class="author">Cristian Perez</p>
+  <p class="date">28 février 2017</p>
 </section>
 
 <section id="anatomy-of-an-image-classifier" class="slide level2">
@@ -75,21 +76,29 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <img src="images/image-classification-pipeline.jpg" style="width:100.0%" />
 </figure>
 <aside class="notes">
-<p>This is my note. - It can contain Markdown - like this list</p>
+<ul>
+<li>Many traditional computer vision image classification algorithms follow this pipeline</li>
+<li>Deep Learning based algorithms bypass the feature extraction step completely</li>
+</ul>
 </aside>
 </section>
-<section><section id="preprocessing" class="titleslide slide level1"><h1>Preprocessing</h1></section><section id="align-detex" class="slide level2">
-<h2>Align (Detex)</h2>
-<p>Align image to a reference assits the classification algorithm</p>
+<section><section id="preprocessing" class="titleslide slide level1"><h1>Preprocessing</h1></section><section id="deskew" class="slide level2">
+<h2>Deskew</h2>
+<p>Align an image to a reference assits the classification algorithm <a href="http://docs.opencv.org/trunk/dd/d3b/tutorial_py_svm_opencv.html"><span class="math inline"><em></em><sup>1</sup></span></a></p>
 <figure>
 <img src="images/deskew1.jpg" style="height:100.0%" />
 </figure>
-<p><a href="http://docs.opencv.org/trunk/dd/d3b/tutorial_py_svm_opencv.html">1</a> <a href="https://www.learnopencv.com/handwritten-digits-classification-an-opencv-c-python-tutorial/">2</a></p>
+<p><a href="https://www.learnopencv.com/handwritten-digits-classification-an-opencv-c-python-tutorial/">2</a></p>
+<aside class="notes">
+<p>People often think of a learning algorithm as a block box. In reality, you can assist the algorithm. If you are building a face recognition system, aligning the images to a reference face leads to improvement. A typical alignment operation uses a facial feature detector to align the eyes in every image.</p>
+<p>Pour le cas de digits, aligner les numéros améliore les résultats. L'inclination de l'écriture peut être corrigé. Ansi l'algorithme ne doit pas apprendre cette variation entre les chiffres.</p>
+</aside>
 </section><section class="slide level2">
 
 <p>Deskewing simple grayscale images can be achieved using image moments (distance and intensity of pixels).</p>
 <aside class="notes">
-<p>Moments relate distance and intensity of the pixels</p>
+<p>This deskewing of simple grayscale images can be achieved using image moments. OpenCV has an implementation of moments and it comes in handy while calculating useful information like centroid, area, skewness of simple images with black backgrounds.</p>
+<p>It turns out that a measure of the skewness is the given by the ratio of the two central moments ( mu11 / mu02 ). The skewness thus calculated can be used in calculating an affine transform that deskews the image.</p>
 </aside>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> deskew(img):
     m <span class="op">=</span> cv2.moments(img)
@@ -103,33 +112,171 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
     <span class="co"># Apply affine transform</span>
     img <span class="op">=</span> cv2.warpAffine(img, M, (SZ, SZ), flags<span class="op">=</span>cv2.WARP_INVERSE_MAP <span class="op">|</span> cv2.INTER_LINEAR)
     <span class="cf">return</span> img</code></pre></div>
-<aside class="notes">
-<p>People often think of a learning algorithm as a block box. In reality, you can assist the algorithm. If you are building a face recognition system, aligning the images to a reference face leads to improvement. A typical alignment operation uses a facial feature detector to align the eyes in every image.</p>
-<p>Pour le cas de digits, aligner les numéros améliore les résultats. L'inclination de l'écriture peut être corrigé. Ansi l'algorithme ne doit pas apprendre cette variation entre les chiffres.</p>
-<p>This deskewing of simple grayscale images can be achieved using image moments. OpenCV has an implementation of moments and it comes in handy while calculating useful information like centroid, area, skewness of simple images with black backgrounds.</p>
-<p>It turns out that a measure of the skewness is the given by the ratio of the two central moments ( mu11 / mu02 ). The skewness thus calculated can be used in calculating an affine transform that deskews the image.</p>
-</aside>
 </section><section id="histogram-equalization" class="slide level2">
 <h2>Histogram equalization</h2>
-<p>Adjust image contrast using the image's histogram.</p>
+<p>Increase image contrast using the image's histogram.</p>
 <figure>
 <img src="images/histogram_equalization.png" style="width:100.0%" />
 </figure>
+<aside class="notes">
+<ul>
+<li>Brighter image will have all pixels confined to high values</li>
+<li>But a good image will have pixels from all regions of the image</li>
+</ul>
+</aside>
 </section><section class="slide level2">
 
+<p>Transformation function which maps the input pixels in brighter region to output pixels in full region.</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">img <span class="op">=</span> cv2.imread(<span class="st">&#39;wiki.jpg&#39;</span>,<span class="dv">0</span>)
 equ <span class="op">=</span> cv2.equalizeHist(img)
 res <span class="op">=</span> np.hstack((img,equ)) <span class="co">#stacking images side-by-side</span>
 cv2.imwrite(<span class="st">&#39;res.png&#39;</span>,res)</code></pre></div>
-<p><img src="images/histeq_numpy1.jpg" /> <img src="images/histeq_numpy2.jpg" /></p>
-<p><a href="http://docs.opencv.org/3.1.0/d5/daf/tutorial_py_histogram_equalization.html">1</a></p>
+<figure>
+<img src="images/equalization_opencv.jpg" />
+</figure>
 </section><section class="slide level2">
 
-<h3 id="color-segmentation">Color segmentation</h3>
 <ul>
+<li>Histogram equalization considers the global contrast of the image</li>
+<li>The background contrast improves after histogram equalization, but the face of statue lost most of the information there due to over-brightness.</li>
+</ul>
+<p><img src="images/clahe_1.svg" style="height:30.0%" /> <a href="http://docs.opencv.org/3.1.0/d5/daf/tutorial_py_histogram_equalization.html">1</a></p>
+</section><section class="slide level2">
+
+<h3 id="adaptive-histogram-equalization">Adaptive Histogram Equalization</h3>
+<ul>
+<li>Histogram is equalized inside blocks.</li>
+<li>Histogram would confine to a small region (unless there is noise).</li>
+<li>If noise is there, it will be amplified. To avoid this, contrast limiting is applied.</li>
+<li>If any histogram bin is above the specified contrast limit (by default 40 in OpenCV), those pixels are clipped and distributed uniformly to other bins before applying histogram equalization.</li>
+<li>After equalization, to remove artifacts in tile borders, bilinear interpolation is applied.</li>
+</ul>
+</section><section class="slide level2">
+
+<figure>
+<img src="images/clahe_2.svg" />
+</figure>
+</section><section class="slide level2">
+
+<h3 id="example-using-fishes">Example using fishes</h3>
+<p>Gray scale</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Read image</span>
+src <span class="op">=</span> cv2.imread(<span class="st">&quot;img_07473.jpg&quot;</span>, cv2.IMREAD_GRAYSCALE)<span class="op">;</span>
+hist <span class="op">=</span> cv2.calcHist(src,[<span class="dv">0</span>],<span class="va">None</span>,[<span class="dv">256</span>],[<span class="dv">0</span>,<span class="dv">256</span>])
+<span class="co"># Histogram equalization</span>
+equ <span class="op">=</span> cv2.equalizeHist(src)
+equ_hit <span class="op">=</span> cv2.calcHist(equ,[<span class="dv">0</span>],<span class="va">None</span>,[<span class="dv">256</span>],[<span class="dv">0</span>,<span class="dv">256</span>])
+<span class="co"># Create a CLAHE object (Arguments are optional).</span>
+clahe <span class="op">=</span> cv2.createCLAHE(clipLimit<span class="op">=</span><span class="fl">2.0</span>, tileGridSize<span class="op">=</span>(<span class="dv">4</span>,<span class="dv">4</span>))
+cl1 <span class="op">=</span> clahe.<span class="bu">apply</span>(src)
+cl1_hist <span class="op">=</span> cv2.calcHist(cl1,[<span class="dv">0</span>],<span class="va">None</span>,[<span class="dv">256</span>],[<span class="dv">0</span>,<span class="dv">256</span>])</code></pre></div>
+</section><section class="slide level2">
+
+<figure>
+<img src="images/hist_gray.jpg" />
+</figure>
+</section><section class="slide level2">
+
+<h3 id="histogram-equalization-for-color-images">Histogram equalization for color images</h3>
+<ul>
+<li>Histogram equalization is that it's a nonlinear process.</li>
+<li>The concept of histogram equalization is only applicable to the intensity values in the image.</li>
+<li>Convert it to a color space where intensity is separated from the color information (i.e. <strong>YUV</strong> color space)</li>
+<li>Equalize the Y-channel and combine it with the other two channels.</li>
+</ul>
+<aside class="notes">
+<ul>
+<li>Histogram equalization is that it's a nonlinear process.</li>
+<li>we cannot just separate out the three channels in an RGB image, equalize the histogram separately, and combine them later to form the output image.</li>
+<li>The concept of histogram equalization is only applicable to the intensity values in the image.</li>
+<li><p>So, we have to make sure not to modify the color information when we do this.</p></li>
+<li>In order to handle the histogram equalization of color images, we need to convert it to a color space where intensity is separated from the color information.</li>
+<li>YUV is a good example of such a color space. Once we convert it to YUV, we just need to equalize the Y-channel and combine it with the other two channels to get the output image.</li>
+</ul>
+</aside>
+</section><section class="slide level2">
+
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Read image</span>
+img <span class="op">=</span> cv2.imread(<span class="st">&#39;img_07473.jpg&#39;</span>)
+img_yuv <span class="op">=</span> cv2.cvtColor(img, cv2.COLOR_BGR2YUV) <span class="co"># transform to YUV</span>
+hist <span class="op">=</span> cv2.calcHist(img_yuv,[<span class="dv">0</span>],<span class="va">None</span>,[<span class="dv">256</span>],[<span class="dv">0</span>,<span class="dv">256</span>]) <span class="co"># histogram for original image</span>
+<span class="co"># equalize the histogram of the Y channel</span>
+img_yuv[:,:,<span class="dv">0</span>] <span class="op">=</span> cv2.equalizeHist(img_yuv[:,:,<span class="dv">0</span>])
+<span class="co"># convert the YUV image back to RGB format</span>
+img_output <span class="op">=</span> cv2.cvtColor(img_yuv, cv2.COLOR_YUV2RGB)
+equ_hit <span class="op">=</span> cv2.calcHist(img_output,[<span class="dv">0</span>],<span class="va">None</span>,[<span class="dv">256</span>],[<span class="dv">0</span>,<span class="dv">256</span>])
+<span class="co"># Create a CLAHE object (Arguments are optional).</span>
+clahe <span class="op">=</span> cv2.createCLAHE(clipLimit<span class="op">=</span><span class="fl">10.0</span>, tileGridSize<span class="op">=</span>(<span class="dv">4</span>,<span class="dv">4</span>))
+img_yuv <span class="op">=</span> cv2.cvtColor(img, cv2.COLOR_BGR2YUV)
+img_yuv[:,:,<span class="dv">0</span>] <span class="op">=</span> clahe.<span class="bu">apply</span>(img_yuv[:,:,<span class="dv">0</span>])
+cl1 <span class="op">=</span> cv2.cvtColor(img_yuv, cv2.COLOR_YUV2RGB)
+cl1_hist <span class="op">=</span> cv2.calcHist(img_yuv,[<span class="dv">0</span>],<span class="va">None</span>,[<span class="dv">256</span>],[<span class="dv">0</span>,<span class="dv">256</span>])</code></pre></div>
+</section><section class="slide level2">
+
+<figure>
+<img src="images/hist_equalization.jpg" />
+</figure>
+</section><section id="image-thresholding" class="slide level2">
+<h2>Image thresholding</h2>
+<ul>
+<li>Method of image segmentation</li>
+<li>If pixel value is greater than a threshold value, it is assigned one value, else it is assigned another value.</li>
+</ul>
+<figure>
+<img src="images/threshold.png" style="height:80.0%" />
+</figure>
+<aside class="notes">
+<ul>
+<li>Converts a gray-scale image into a binary image</li>
+<li>The two levels are assigned to pixels that are below or above the specified threshold value.</li>
+<li>If pixel value is greater than a threshold value, it is assigned one value (may be white), else it is assigned another value (may be black).</li>
+</ul>
+</aside>
+</section><section class="slide level2">
+
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Thresholding with threshold value set 127</span>
+th, dst <span class="op">=</span> cv2.threshold(src,<span class="dv">127</span>,<span class="dv">255</span>, cv2.THRESH_BINARY)<span class="op">;</span>
+cv2.imwrite(<span class="st">&quot;opencv-thresh-binary.jpg&quot;</span>, dst)<span class="op">;</span>
+
+<span class="co"># Thresholding using THRESH_TOZERO</span>
+th, dst <span class="op">=</span> cv2.threshold(src,<span class="dv">127</span>,<span class="dv">255</span>, cv2.THRESH_TOZERO)<span class="op">;</span>
+cv2.imwrite(<span class="st">&quot;opencv-thresh-tozero.jpg&quot;</span>, dst)<span class="op">;</span>
+
+<span class="co"># Thresholding using THRESH_TOZERO_INV</span>
+th, dst <span class="op">=</span> cv2.threshold(src,<span class="dv">127</span>,<span class="dv">255</span>, cv2.THRESH_TOZERO_INV)<span class="op">;</span>
+cv2.imwrite(<span class="st">&quot;opencv-thresh-to-zero-inv.jpg&quot;</span>, dst)<span class="op">;</span></code></pre></div>
+</section><section id="adaptative-thresholding" class="slide level2">
+<h2>Adaptative thresholding</h2>
+<ul>
+<li>The algorithm calculate the threshold for a small regions of the image.</li>
+<li>Different thresholds for different regions of the same image</li>
+<li>Gives us better results for images with varying illumination.</li>
+</ul>
+</section><section class="slide level2">
+
+<p><code>cv2.ADAPTIVE_THRESH_MEAN_C</code> : threshold value is the mean of neighbourhood area. <code>cv2.ADAPTIVE_THRESH_GAUSSIAN_C</code> : threshold value is the weighted sum of neighbourhood values where weights are a gaussian window.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">th2 <span class="op">=</span> cv2.adaptiveThreshold(img,<span class="dv">255</span>,cv2.ADAPTIVE_THRESH_MEAN_C,<span class="op">\</span>
+            cv2.THRESH_BINARY,<span class="dv">11</span>,<span class="dv">2</span>)
+th3 <span class="op">=</span> cv2.adaptiveThreshold(img,<span class="dv">255</span>,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,<span class="op">\</span>
+            cv2.THRESH_BINARY,<span class="dv">11</span>,<span class="dv">2</span>)</code></pre></div>
+</section><section id="otsus-binarization" class="slide level2">
+<h2>Otsu’s Binarization</h2>
+<ul>
+<li>Automatically calculates a threshold value from image histogram for a bimodal image</li>
 <li>Otsu <a href="http://www.bogotobogo.com/python/OpenCV_Python/python_opencv3_Image_Global_Thresholding_Adaptive_Thresholding_Otsus_Binarization_Segmentations.php">1</a></li>
 </ul>
-<h3 id="object-detection">Object detection</h3>
+</section><section class="slide level2">
+
+<p><code>cv2.threshold()</code> function is used, but pass an extra flag, <code>cv2.THRESH_OTSU</code></p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># global thresholding</span>
+ret1,th1 <span class="op">=</span> cv2.threshold(img,<span class="dv">127</span>,<span class="dv">255</span>,cv2.THRESH_BINARY)
+<span class="co"># Otsu&#39;s thresholding</span>
+ret2,th2 <span class="op">=</span> cv2.threshold(img,<span class="dv">0</span>,<span class="dv">255</span>,cv2.THRESH_BINARY<span class="op">+</span>cv2.THRESH_OTSU)
+<span class="co"># Otsu&#39;s thresholding after Gaussian filtering</span>
+blur <span class="op">=</span> cv2.GaussianBlur(img,(<span class="dv">5</span>,<span class="dv">5</span>),<span class="dv">0</span>)
+ret3,th3 <span class="op">=</span> cv2.threshold(blur,<span class="dv">0</span>,<span class="dv">255</span>,cv2.THRESH_BINARY<span class="op">+</span>cv2.THRESH_OTSU)</code></pre></div>
+</section><section id="object-detection" class="slide level2">
+<h2>Object detection</h2>
 <p>Test</p>
 </section><section id="feature-extraction" class="slide level2">
 <h2>Feature Extraction</h2>
