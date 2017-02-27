@@ -274,63 +274,131 @@ ret3,th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
 # Feature Extraction
 
-## Approches 
+## Understanding features
 
-- HOG
-- SIFT
-- SURF
+Find the exact location of these patches in the original image.
 
-## Test  
+![](images/feature_building.jpg) 
+
+<div class="notes">
+- A and B sont des surfaces plattes et sont étalés dans bcp de surfaces.
+Il est difficile de trouver la location exacte de ces carrés.
+
+- C and D sont plus simples, ils sont des bords de batiments.
+Vous pouvez trouver la position approximative mais pas l'emplacement exacte.
+L'image varie pas le long des bords mais ortogonalement aux bords.
+Les bords sont une meilleur caracteristiques comparés aux surfaces plats.
+
+- E and F sont des coins du batiment donc on peut les toruver facilement. 
+Parce que aux coins à chaque fois que l'on deplace le carré, il va varier.
+Donc les coins sont une meilleur caracteritique.
+</div>
+
+---------------
+
+## Feature definition
+
+- Piece of information which is relevant for solving the computational task
+  related to a certain application.
+- Specific structures in the image such as points, edges or objects. 
+- The result of a general neighborhood operation or feature detection applied
+  to the image.
+- Concept is very general and the choice of features in a particular computer
+  vision system may be highly dependent on the specific problem at hand.
+
+<div class="notes">
+This is the same sense as feature in machine learning and pattern
+recognition generally, though image processing has a very sophisticated
+collection of features.
+</div>
+
+--------------
+
+### Feature extractor
+
+- A feature descriptor is a representation of an image that simplifies the
+  image by extracting useful information and throwing away extraneous
+information.
+- A feature descriptor converts an image of size width x height x 3 (channels)
+  to a feature vector. (For HOG, the input image is of size 64 x 128 x 3 and
+the output feature vector is of length 3780)
+
+<div class="notes">
+The feature vector is not useful for the purpose of viewing the image. But, it
+is very useful for tasks like image recognition and object detection.
+</div>
+
+-------------
+
+## Scale-Invariant Feature Transform (SIFT)
+
+- Extract keypoints and compute its descriptor
+- Invariant to uniform scaling, orientation and illumination changes
+- Orientation is assigned to each keypoint to achieve invariance to image rotation
+- Descriptors are vectors of 128 values, calculated from orientation histogram over the neighbourhood. [docs.opencv](http://docs.opencv.org/master/da/df5/tutorial_py_sift_intro.html)
+
+---------
 
 ```python
-if (a > 3) {
-  moveShip(5 * gravity, DOWN);
-}
-if (a > 3) {
-  moveShip(5 * gravity, DOWN);
-}
-if (a > 3) {
-  moveShip(5 * gravity, DOWN);
-}
-if (a > 3) {
-  moveShip(5 * gravity, DOWN);
-}
-if (a > 3) {
-  moveShip(5 * gravity, DOWN);
-}
-if (a > 3) {
-  moveShip(5 * gravity, DOWN);
-}
-if (a > 3) {
-  moveShip(5 * gravity, DOWN);
-}
+img = cv2.imread('img_00898.jpg', 0)
+sift = cv2.xfeatures2d.SIFT_create()
+kp = sift.detect(img)
+img2 = cv2.drawKeypoints(img,kp,None,(255,0,0),4)
+plt.imshow(img2)
+plt.savefig("sift.png")
 ```
 
-------------------
+![](images/sift.png)
 
-fruit| price
------|-----:
-apple|2.05
-pear|1.37
-orange|3.09
+<div class="notes">
+Each keypoint is a special structure which has many attributes like its (x,y) coordinates, size of the meaningful neighbourhood, angle which specifies its orientation, response that specifies strength of keypoints etc.
 
-------------------
+- Orientation: A neigbourhood is taken around the keypoint location depending on the scale, and the gradient magnitude and direction is calculated in that region
+</div>
 
-| The limerick packs laughs anatomical
-| In space that is quite economical.
-|    But the good ones I've seen
-|    So seldom are clean
-| And the clean ones so seldom are comical
+------------
 
-| 200 Main St.
-| Berkeley, CA 94718
+## Speeded Up Robust Features (SURF)
+
+- In 2006, it is a speeded-up version of SIFT.
+- Rely on determinant of Hessian matrix for both scale and location.
+
+------------
+
+```python
+img = cv2.imread('img_07473.jpg',0)
+surf.setHessianThreshold(1000)
+kp, des = surf.detectAndCompute(img,None)
+img2 = cv2.drawKeypoints(img,kp,None,(255,0,0),4)
+```
+
+![](images/surf.png)
 
 # Object detection
 
 ## Libraries
 
-- Dlib
+- Dlib [Object_detector](http://dlib.net/ml.html#structural_object_detection_trainer)
+- Opencv [Cascade Clssfifier](http://docs.opencv.org/master/d7/d8b/tutorial_py_face_detection.html)
 - Deep learning
+
+<div class="notes">
+In ImageNet Large Scale Visual Recognition Challenge (ILSVRC) of 2012, an
+algorithm based on Deep Learning by Alex Krizhevsky,
+Ilya Sutskever, and Geoffrey Hinton shook the computer vision world with an
+astounding 85% accuracy — 11% better than the algorithm that won the second
+place! In ILSVRC 2012, this was the only Deep Learning based entry. 
+In 2013, all winning entries were based on Deep Learning and in 2015 multiple
+Convolutional Neural Network (CNN) based algorithms surpassed the human
+recognition rate of 95%.
+
+With such huge success in image recognition, Deep Learning based object
+detection was inevitable. Techniques like Faster R-CNN produce jaw-dropping
+results over multiple object classes. We will learn about these in later posts,
+but for now keep in mind that if you have not looked at Deep Learning based
+image recognition and object detection algorithms for your applications, you
+may be missing out on a huge opportunity to get better results.
+</div>
 
 # Conclusion
 

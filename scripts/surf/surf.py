@@ -1,26 +1,14 @@
 import cv2
-import numpy as np
-from mahotas.features import surf
-import milk
+import matplotlib.pyplot as plt
 
-img = cv2.imread('img_07473.jpg')
-gray= cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+surf = cv2.xfeatures2d.SURF_create()
 
-#f = mh.demos.load('luispedro', as_grey=True)
-f = gray.astype(np.uint8)
-spoints = surf.surf(f, nr_octaves=4, nr_scales=6, initial_step_size=2)
-print("Nr points:", len(spoints))
+img = cv2.imread('img_07473.jpg',0)
+surf.setHessianThreshold(1000)
+#surf.setUpright(True)
+# Find keypoints and descriptors directly
+kp, des = surf.detectAndCompute(img,None)
+img2 = cv2.drawKeypoints(img,kp,None,(255,0,0),4)
 
-try:
-    import milk
-    descrs = spoints[:,5:]
-    k = 5
-    values, _  =milk.kmeans(descrs, k)
-    colors = np.array([(255-52*i,25+52*i,37**i % 101) for i in range(k)])
-except:
-    values = np.zeros(100)
-    colors = np.array([(255,0,0)])
-
-f2 = surf.show_surf(f, spoints[:100], values, colors)
-
-cv2.imwrite('sift_keypoints.jpg',f2)
+plt.imshow(img2)
+plt.savefig("surf.png")

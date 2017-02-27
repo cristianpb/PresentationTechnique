@@ -283,76 +283,92 @@ ret2,th2 <span class="op">=</span> cv2.threshold(img,<span class="dv">0</span>,<
 blur <span class="op">=</span> cv2.GaussianBlur(img,(<span class="dv">5</span>,<span class="dv">5</span>),<span class="dv">0</span>)
 ret3,th3 <span class="op">=</span> cv2.threshold(blur,<span class="dv">0</span>,<span class="dv">255</span>,cv2.THRESH_BINARY<span class="op">+</span>cv2.THRESH_OTSU)</code></pre></div>
 </section></section>
-<section><section id="feature-extraction" class="titleslide slide level1"><h1>Feature Extraction</h1></section><section id="approches" class="slide level2">
-<h2>Approches</h2>
+<section><section id="feature-extraction" class="titleslide slide level1"><h1>Feature Extraction</h1></section><section id="understanding-features" class="slide level2">
+<h2>Understanding features</h2>
+<p>Find the exact location of these patches in the original image.</p>
+<figure>
+<img src="images/feature_building.jpg" />
+</figure>
+<aside class="notes">
 <ul>
-<li>HOG</li>
-<li>SIFT</li>
-<li>SURF</li>
+<li><p>A and B sont des surfaces plattes et sont étalés dans bcp de surfaces. Il est difficile de trouver la location exacte de ces carrés.</p></li>
+<li><p>C and D sont plus simples, ils sont des bords de batiments. Vous pouvez trouver la position approximative mais pas l'emplacement exacte. L'image varie pas le long des bords mais ortogonalement aux bords. Les bords sont une meilleur caracteristiques comparés aux surfaces plats.</p></li>
+<li>E and F sont des coins du batiment donc on peut les toruver facilement. Parce que aux coins à chaque fois que l'on deplace le carré, il va varier. Donc les coins sont une meilleur caracteritique.</li>
 </ul>
-</section><section id="test" class="slide level2">
-<h2>Test</h2>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="cf">if</span> (a <span class="op">&gt;</span> <span class="dv">3</span>) {
-  moveShip(<span class="dv">5</span> <span class="op">*</span> gravity, DOWN)<span class="op">;</span>
-}
-<span class="cf">if</span> (a <span class="op">&gt;</span> <span class="dv">3</span>) {
-  moveShip(<span class="dv">5</span> <span class="op">*</span> gravity, DOWN)<span class="op">;</span>
-}
-<span class="cf">if</span> (a <span class="op">&gt;</span> <span class="dv">3</span>) {
-  moveShip(<span class="dv">5</span> <span class="op">*</span> gravity, DOWN)<span class="op">;</span>
-}
-<span class="cf">if</span> (a <span class="op">&gt;</span> <span class="dv">3</span>) {
-  moveShip(<span class="dv">5</span> <span class="op">*</span> gravity, DOWN)<span class="op">;</span>
-}
-<span class="cf">if</span> (a <span class="op">&gt;</span> <span class="dv">3</span>) {
-  moveShip(<span class="dv">5</span> <span class="op">*</span> gravity, DOWN)<span class="op">;</span>
-}
-<span class="cf">if</span> (a <span class="op">&gt;</span> <span class="dv">3</span>) {
-  moveShip(<span class="dv">5</span> <span class="op">*</span> gravity, DOWN)<span class="op">;</span>
-}
-<span class="cf">if</span> (a <span class="op">&gt;</span> <span class="dv">3</span>) {
-  moveShip(<span class="dv">5</span> <span class="op">*</span> gravity, DOWN)<span class="op">;</span>
-}</code></pre></div>
+</aside>
+</section><section id="feature-definition" class="slide level2">
+<h2>Feature definition</h2>
+<ul>
+<li>Piece of information which is relevant for solving the computational task related to a certain application.</li>
+<li>Specific structures in the image such as points, edges or objects.</li>
+<li>The result of a general neighborhood operation or feature detection applied to the image.</li>
+<li>Concept is very general and the choice of features in a particular computer vision system may be highly dependent on the specific problem at hand.</li>
+</ul>
+<aside class="notes">
+<p>This is the same sense as feature in machine learning and pattern recognition generally, though image processing has a very sophisticated collection of features.</p>
+</aside>
 </section><section class="slide level2">
 
-<table>
-<thead>
-<tr class="header">
-<th>fruit</th>
-<th style="text-align: right;">price</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>apple</td>
-<td style="text-align: right;">2.05</td>
-</tr>
-<tr class="even">
-<td>pear</td>
-<td style="text-align: right;">1.37</td>
-</tr>
-<tr class="odd">
-<td>orange</td>
-<td style="text-align: right;">3.09</td>
-</tr>
-</tbody>
-</table>
+<h3 id="feature-extractor">Feature extractor</h3>
+<ul>
+<li>A feature descriptor is a representation of an image that simplifies the image by extracting useful information and throwing away extraneous information.</li>
+<li>A feature descriptor converts an image of size width x height x 3 (channels) to a feature vector. (For HOG, the input image is of size 64 x 128 x 3 and the output feature vector is of length 3780)</li>
+</ul>
+<aside class="notes">
+<p>The feature vector is not useful for the purpose of viewing the image. But, it is very useful for tasks like image recognition and object detection.</p>
+</aside>
+</section><section id="scale-invariant-feature-transform-sift" class="slide level2">
+<h2>Scale-Invariant Feature Transform (SIFT)</h2>
+<ul>
+<li>Extract keypoints and compute its descriptor</li>
+<li>Invariant to uniform scaling, orientation and illumination changes</li>
+<li>Orientation is assigned to each keypoint to achieve invariance to image rotation</li>
+<li>Descriptors are vectors of 128 values, calculated from orientation histogram over the neighbourhood. <a href="http://docs.opencv.org/master/da/df5/tutorial_py_sift_intro.html">docs.opencv</a></li>
+</ul>
 </section><section class="slide level2">
 
-<div style="white-space: pre-line;">The limerick packs laughs anatomical
-In space that is quite economical.
-   But the good ones I've seen
-   So seldom are clean
-And the clean ones so seldom are comical</div>
-<div style="white-space: pre-line;">200 Main St.
-Berkeley, CA 94718</div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">img <span class="op">=</span> cv2.imread(<span class="st">&#39;img_00898.jpg&#39;</span>, <span class="dv">0</span>)
+sift <span class="op">=</span> cv2.xfeatures2d.SIFT_create()
+kp <span class="op">=</span> sift.detect(img)
+img2 <span class="op">=</span> cv2.drawKeypoints(img,kp,<span class="va">None</span>,(<span class="dv">255</span>,<span class="dv">0</span>,<span class="dv">0</span>),<span class="dv">4</span>)
+plt.imshow(img2)
+plt.savefig(<span class="st">&quot;sift.png&quot;</span>)</code></pre></div>
+<figure>
+<img src="images/sift.png" />
+</figure>
+<aside class="notes">
+<p>Each keypoint is a special structure which has many attributes like its (x,y) coordinates, size of the meaningful neighbourhood, angle which specifies its orientation, response that specifies strength of keypoints etc.</p>
+<ul>
+<li>Orientation: A neigbourhood is taken around the keypoint location depending on the scale, and the gradient magnitude and direction is calculated in that region</li>
+</ul>
+</aside>
+</section><section id="speeded-up-robust-features-surf" class="slide level2">
+<h2>Speeded Up Robust Features (SURF)</h2>
+<ul>
+<li>In 2006, it is a speeded-up version of SIFT.</li>
+<li>Rely on determinant of Hessian matrix for both scale and location.</li>
+</ul>
+</section><section class="slide level2">
+
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">img <span class="op">=</span> cv2.imread(<span class="st">&#39;img_07473.jpg&#39;</span>,<span class="dv">0</span>)
+surf.setHessianThreshold(<span class="dv">1000</span>)
+kp, des <span class="op">=</span> surf.detectAndCompute(img,<span class="va">None</span>)
+img2 <span class="op">=</span> cv2.drawKeypoints(img,kp,<span class="va">None</span>,(<span class="dv">255</span>,<span class="dv">0</span>,<span class="dv">0</span>),<span class="dv">4</span>)</code></pre></div>
+<figure>
+<img src="images/surf.png" />
+</figure>
 </section></section>
 <section><section id="object-detection" class="titleslide slide level1"><h1>Object detection</h1></section><section id="libraries" class="slide level2">
 <h2>Libraries</h2>
 <ul>
-<li>Dlib</li>
+<li>Dlib <a href="http://dlib.net/ml.html#structural_object_detection_trainer">Object_detector</a></li>
+<li>Opencv <a href="http://docs.opencv.org/master/d7/d8b/tutorial_py_face_detection.html">Cascade Clssfifier</a></li>
 <li>Deep learning</li>
 </ul>
+<aside class="notes">
+<p>In ImageNet Large Scale Visual Recognition Challenge (ILSVRC) of 2012, an algorithm based on Deep Learning by Alex Krizhevsky, Ilya Sutskever, and Geoffrey Hinton shook the computer vision world with an astounding 85% accuracy — 11% better than the algorithm that won the second place! In ILSVRC 2012, this was the only Deep Learning based entry. In 2013, all winning entries were based on Deep Learning and in 2015 multiple Convolutional Neural Network (CNN) based algorithms surpassed the human recognition rate of 95%.</p>
+<p>With such huge success in image recognition, Deep Learning based object detection was inevitable. Techniques like Faster R-CNN produce jaw-dropping results over multiple object classes. We will learn about these in later posts, but for now keep in mind that if you have not looked at Deep Learning based image recognition and object detection algorithms for your applications, you may be missing out on a huge opportunity to get better results.</p>
+</aside>
 </section></section>
 <section><section id="conclusion" class="titleslide slide level1"><h1>Conclusion</h1></section><section id="first" class="slide level2">
 <h2>First</h2>
