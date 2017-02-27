@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<?xml-stylesheet type='text/xsl' href='image_metadata_stylesheet.xsl'?>
+<dataset>
+<name>imglab dataset</name>
+<comment>Created by imglab tool.</comment>
+<images>
+  <image file='aug_109_3508.jpeg'>
+    <box top='26' left='7' width='277' height='240'/>
+    <box top='126' left='135' width='77' height='70'/>
+  </image>
+  <image file='aug_110_2547.jpeg'>
+    <box top='31' left='29' width='251' height='251'/>
+  </image>
+  <image file='aug_113_1006.jpeg'>
+    <box top='-7' left='2' width='277' height='279'/>
+  </image>
+  <image file='aug_116_1126.jpeg'>
+    <box top='10' left='-5' width='288' height='266'/>
+  </image>
+  <image file='aug_118_3359.jpeg'>
+    <box top='9' left='0' width='285' height='259'/>
+  </image>
+  <image file='aug_11_4278.jpeg'>
+    <box top='5' left='10' width='252' height='277'/>
+  </image>
+  <image file='aug_120_8601.jpeg'>
+    <box top='2' left='9' width='270' height='268'/>
+  </image>
+  <image file='aug_122_3415.jpeg'>
+    <box top='6' left='0' width='291' height='266'/>
+  </image>
+  <image file='aug_124_3060.jpeg'>
+    <box top='16' left='-3' width='287' height='283'/>
+  </image>
+  <image file='aug_126_9356.jpeg'>
+    <box top='11' left='15' width='275' height='277'/>
+  </image>
+  <image file='aug_130_1502.jpeg'>
+    <box top='16' left='19' width='262' height='276'/>
+  </image>
+</images>
+</dataset>

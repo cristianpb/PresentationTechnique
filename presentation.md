@@ -64,6 +64,11 @@ def deskew(img):
     img = cv2.warpAffine(img, M, (SZ, SZ), flags=cv2.WARP_INVERSE_MAP | cv2.INTER_LINEAR)
     return img
 ```
+-----------
+
+### Not that easy for fishes
+
+![](images/deskewed.png){ height=50% }
 
 ## Histogram equalization
 
@@ -78,7 +83,9 @@ Increase image contrast using the image's histogram.
 
 -------
 
-Transformation function which maps the input pixels in brighter region to output pixels in full region.
+Palette change by  a transformation function which maps the input pixels in
+brighter region to the output pixels in full region.
+
 
 ```python
 img = cv2.imread('wiki.jpg',0)
@@ -92,7 +99,8 @@ cv2.imwrite('res.png',res)
 -------
 
 - Histogram equalization considers the global contrast of the image
-- The background contrast improves after histogram equalization, but the face of statue lost most of the information there due to over-brightness.
+- The background contrast improves after histogram equalization, but the face
+  of statue lost most of the information there due to over-brightness.
 
 ![](images/clahe_1.svg){ height=30% }
 [1](http://docs.opencv.org/3.1.0/d5/daf/tutorial_py_histogram_equalization.html)
@@ -160,6 +168,9 @@ information.
 - YUV is a good example of such a color space. Once we convert it to YUV, we
   just need to equalize the Y-channel and combine it with the other two
 channels to get the output image.
+- Y′ stands for the luma component (the brightness) and U and V are the
+  chrominance (color) components; luminance is denoted by Y and luma by Y′ –
+the prime symbols (') denote gamma compression.
 </div>
 
 ---------
@@ -261,13 +272,9 @@ blur = cv2.GaussianBlur(img,(5,5),0)
 ret3,th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 ```
 
---------
+# Feature Extraction
 
-## Object detection 
-
-Test
-
-## Feature Extraction
+## Approches 
 
 - HOG
 - SIFT
@@ -318,13 +325,16 @@ orange|3.09
 | 200 Main St.
 | Berkeley, CA 94718
 
+# Object detection
 
-- Eat eggs
-- Drink coffee
+## Libraries
 
-# In the evening
+- Dlib
+- Deep learning
 
-## Dinner
+# Conclusion
+
+## First
 
 This is an [inline link](/url), and here's [one with
 a title](http://fsf.org "click here for a good time!").

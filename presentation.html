@@ -112,6 +112,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
     <span class="co"># Apply affine transform</span>
     img <span class="op">=</span> cv2.warpAffine(img, M, (SZ, SZ), flags<span class="op">=</span>cv2.WARP_INVERSE_MAP <span class="op">|</span> cv2.INTER_LINEAR)
     <span class="cf">return</span> img</code></pre></div>
+</section><section class="slide level2">
+
+<h3 id="not-that-easy-for-fishes">Not that easy for fishes</h3>
+<figure>
+<img src="images/deskewed.png" style="height:50.0%" />
+</figure>
 </section><section id="histogram-equalization" class="slide level2">
 <h2>Histogram equalization</h2>
 <p>Increase image contrast using the image's histogram.</p>
@@ -126,7 +132,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </aside>
 </section><section class="slide level2">
 
-<p>Transformation function which maps the input pixels in brighter region to output pixels in full region.</p>
+<p>Palette change by a transformation function which maps the input pixels in brighter region to the output pixels in full region.</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">img <span class="op">=</span> cv2.imread(<span class="st">&#39;wiki.jpg&#39;</span>,<span class="dv">0</span>)
 equ <span class="op">=</span> cv2.equalizeHist(img)
 res <span class="op">=</span> np.hstack((img,equ)) <span class="co">#stacking images side-by-side</span>
@@ -192,6 +198,7 @@ cl1_hist <span class="op">=</span> cv2.calcHist(cl1,[<span class="dv">0</span>],
 <li><p>So, we have to make sure not to modify the color information when we do this.</p></li>
 <li>In order to handle the histogram equalization of color images, we need to convert it to a color space where intensity is separated from the color information.</li>
 <li>YUV is a good example of such a color space. Once we convert it to YUV, we just need to equalize the Y-channel and combine it with the other two channels to get the output image.</li>
+<li>Y′ stands for the luma component (the brightness) and U and V are the chrominance (color) components; luminance is denoted by Y and luma by Y′ – the prime symbols (') denote gamma compression.</li>
 </ul>
 </aside>
 </section><section class="slide level2">
@@ -275,11 +282,9 @@ ret2,th2 <span class="op">=</span> cv2.threshold(img,<span class="dv">0</span>,<
 <span class="co"># Otsu&#39;s thresholding after Gaussian filtering</span>
 blur <span class="op">=</span> cv2.GaussianBlur(img,(<span class="dv">5</span>,<span class="dv">5</span>),<span class="dv">0</span>)
 ret3,th3 <span class="op">=</span> cv2.threshold(blur,<span class="dv">0</span>,<span class="dv">255</span>,cv2.THRESH_BINARY<span class="op">+</span>cv2.THRESH_OTSU)</code></pre></div>
-</section><section id="object-detection" class="slide level2">
-<h2>Object detection</h2>
-<p>Test</p>
-</section><section id="feature-extraction" class="slide level2">
-<h2>Feature Extraction</h2>
+</section></section>
+<section><section id="feature-extraction" class="titleslide slide level1"><h1>Feature Extraction</h1></section><section id="approches" class="slide level2">
+<h2>Approches</h2>
 <ul>
 <li>HOG</li>
 <li>SIFT</li>
@@ -341,13 +346,16 @@ In space that is quite economical.
 And the clean ones so seldom are comical</div>
 <div style="white-space: pre-line;">200 Main St.
 Berkeley, CA 94718</div>
+</section></section>
+<section><section id="object-detection" class="titleslide slide level1"><h1>Object detection</h1></section><section id="libraries" class="slide level2">
+<h2>Libraries</h2>
 <ul>
-<li>Eat eggs</li>
-<li>Drink coffee</li>
+<li>Dlib</li>
+<li>Deep learning</li>
 </ul>
 </section></section>
-<section><section id="in-the-evening" class="titleslide slide level1"><h1>In the evening</h1></section><section id="dinner" class="slide level2">
-<h2>Dinner</h2>
+<section><section id="conclusion" class="titleslide slide level1"><h1>Conclusion</h1></section><section id="first" class="slide level2">
+<h2>First</h2>
 <p>This is an <a href="/url">inline link</a>, and here's <a href="http://fsf.org" title="click here for a good time!">one with a title</a>.</p>
 </section><section class="slide level2">
 

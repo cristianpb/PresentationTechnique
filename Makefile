@@ -13,8 +13,8 @@ html:	clean $(HTML)
 %.html:	%.md
 	pandoc -t revealjs -s  -o $@ $< &
 
-%.pdf:	%.md
-	pandoc -t beamer -s -V theme=$(THEME) --latex-engine=pdflatex -o $@ $< &
+#%.pdf:	%.md
+#	pandoc -t beamer -s -V theme=$(THEME) --latex-engine=pdflatex -o $@ $< &
 
 clean:
 	rm -f *.html *.pdf
