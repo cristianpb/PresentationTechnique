@@ -17,21 +17,19 @@ date: 28 février 2017
 
 ## Deskew
 
-Align an image to a reference assits the classification algorithm
-[$^1$](http://docs.opencv.org/trunk/dd/d3b/tutorial_py_svm_opencv.html)
+Align an image to a reference assits the classification algorithm 
+[1](http://docs.opencv.org/trunk/dd/d3b/tutorial_py_svm_opencv.html),
+[2](https://www.learnopencv.com/handwritten-digits-classification-an-opencv-c-python-tutorial/).
 
 ![](images/deskew1.jpg){ height=100% }
 
-[2](https://www.learnopencv.com/handwritten-digits-classification-an-opencv-c-python-tutorial/)
-
 <div class="notes">
-People often think of a learning algorithm as a block box.  In reality, you can
-assist the algorithm.  If you are building a face recognition system, aligning
-the images to a reference face leads to improvement.  A typical alignment
-operation uses a facial feature detector to align the eyes in every image.
+Il est possible d'aider l'algorithme d'apprentissage. Pour le cas de
+reconnaissance de visage par exemple, aligner les images par rapport par
+rapport à la position des yeux améliore les résultats.
 
 Pour le cas de digits, aligner les numéros améliore les résultats.
-L'inclination de l'écriture peut être corrigé.  Ansi l'algorithme ne doit pas
+L'inclination de l'écriture peut être corrigé.  Ainsi l'algorithme ne doit pas
 apprendre cette variation entre les chiffres.
 </div>
 
@@ -114,7 +112,7 @@ cv2.imwrite('res.png',res)
 - Histogram would confine to a small region (unless there is noise).
 - If noise is there, it will be amplified. To avoid this, contrast limiting is applied.
 - If any histogram bin is above the specified contrast limit (by default 40 in OpenCV), those pixels are clipped and distributed uniformly to other bins before applying histogram equalization. 
-- After equalization, to remove artifacts in tile borders, bilinear interpolation is applied.
+- After equalization, to remove artefacts in tile borders, bilinear interpolation is applied.
 
 -------
 
@@ -124,7 +122,7 @@ cv2.imwrite('res.png',res)
 
 ### Example using fishes
 
-Gray scale
+Gray scale, [doc histrogram opencv](http://docs.opencv.org/2.4/doc/tutorials/imgproc/histograms/histogram_calculation/histogram_calculation.html).
 
 ```python
 # Read image
@@ -133,7 +131,7 @@ hist = cv2.calcHist(src,[0],None,[256],[0,256])
 # Histogram equalization
 equ = cv2.equalizeHist(src)
 equ_hit = cv2.calcHist(equ,[0],None,[256],[0,256])
-# Create a CLAHE object (Arguments are optional).
+# Create a AdaptativeHistogramEqualization object
 clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(4,4))
 cl1 = clahe.apply(src)
 cl1_hist = cv2.calcHist(cl1,[0],None,[256],[0,256])
@@ -147,11 +145,11 @@ cl1_hist = cv2.calcHist(cl1,[0],None,[256],[0,256])
 
 ### Histogram equalization for color images
 
-- Histogram equalization is that it's a nonlinear process.
+- Histogram equalization is a nonlinear process.
 - The concept of histogram equalization is only applicable to the intensity
   values in the image.
 - Convert it to a color space where intensity is separated from the color
-  information (i.e. **YUV** color space)
+  information (i.e. [ **YUV** ](https://en.wikipedia.org/wiki/YUV) color space)
 - Equalize the Y-channel and combine it with the other two channels.
 
 <div class="notes">
@@ -232,45 +230,37 @@ cv2.imwrite("opencv-thresh-to-zero-inv.jpg", dst);
 
 --------
 
-## Adaptative thresholding
+## Adaptive thresholding
 
 - The algorithm calculate the threshold for a small regions of the image. 
 - Different thresholds for different regions of the same image 
-- Gives us better results for images with varying illumination.
+- Gives better results for images with varying illumination.
 
 --------
 
-`cv2.ADAPTIVE_THRESH_MEAN_C` : threshold value is the mean of neighbourhood area.
-`cv2.ADAPTIVE_THRESH_GAUSSIAN_C` : threshold value is the weighted sum of neighbourhood values where weights are a gaussian window.
-
-```python
-th2 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,\
-            cv2.THRESH_BINARY,11,2)
-th3 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
-            cv2.THRESH_BINARY,11,2)
-```
+![](images/ada_threshold.jpeg)
 
 --------
 
 ## Otsu’s Binarization 
 
-- Automatically calculates a threshold value from image histogram for a bimodal
-  image
-- Otsu [1]( http://www.bogotobogo.com/python/OpenCV_Python/python_opencv3_Image_Global_Thresholding_Adaptive_Thresholding_Otsus_Binarization_Segmentations.php )
+- Automatically finds a threshold value which lies in between two peaks such
+  that variances to both classes are minimum
+- [Otsu]( http://www.bogotobogo.com/python/OpenCV_Python/python_opencv3_Image_Global_Thresholding_Adaptive_Thresholding_Otsus_Binarization_Segmentations.php )
+
+<div class="notes">
+But consider a bimodal image (In simple words, bimodal image is an image whose
+histogram has two peaks). For that image, we can approximately take a value in
+the middle of those peaks as threshold value, right ? That is what Otsu
+binarization does. So in simple words, it automatically calculates a threshold
+value from image histogram for a bimodal image. (For images which are not
+bimodal, binarization won’t be accurate.)
+</div>
 
 --------
 
-`cv2.threshold()` function is used, but pass an extra flag, `cv2.THRESH_OTSU`
+![](images/thresholding.png)
 
-```python
-# global thresholding
-ret1,th1 = cv2.threshold(img,127,255,cv2.THRESH_BINARY)
-# Otsu's thresholding
-ret2,th2 = cv2.threshold(img,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-# Otsu's thresholding after Gaussian filtering
-blur = cv2.GaussianBlur(img,(5,5),0)
-ret3,th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-```
 
 # Feature Extraction
 
@@ -319,8 +309,8 @@ collection of features.
 - A feature descriptor is a representation of an image that simplifies the
   image by extracting useful information and throwing away extraneous
 information.
-- A feature descriptor converts an image of size width x height x 3 (channels)
-  to a feature vector. (For HOG, the input image is of size 64 x 128 x 3 and
+- A feature descriptor converts an image of size `width x height x 3` (channels)
+  to a feature vector. (For HOG, the input image is of size `64 x 128 x 3` and
 the output feature vector is of length 3780)
 
 <div class="notes">
@@ -335,7 +325,7 @@ is very useful for tasks like image recognition and object detection.
 - Extract keypoints and compute its descriptor
 - Invariant to uniform scaling, orientation and illumination changes
 - Orientation is assigned to each keypoint to achieve invariance to image rotation
-- Descriptors are vectors of 128 values, calculated from orientation histogram over the neighbourhood. [docs.opencv](http://docs.opencv.org/master/da/df5/tutorial_py_sift_intro.html)
+- Descriptors are vectors of 128 values, calculated from orientation histogram over the neighbourhood, [docs.opencv](http://docs.opencv.org/master/da/df5/tutorial_py_sift_intro.html).
 
 ---------
 
@@ -353,8 +343,9 @@ plt.savefig("sift.png")
 <div class="notes">
 Each keypoint is a special structure which has many attributes like its (x,y) coordinates, size of the meaningful neighbourhood, angle which specifies its orientation, response that specifies strength of keypoints etc.
 
-- Orientation: A neigbourhood is taken around the keypoint location depending on the scale, and the gradient magnitude and direction is calculated in that region
-</div>
+- Orientation: A neighbourhood is taken around the keypoint location depending
+  on the scale, and the gradient magnitude and direction is calculated in that
+region </div>
 
 ------------
 
@@ -373,6 +364,28 @@ img2 = cv2.drawKeypoints(img,kp,None,(255,0,0),4)
 ```
 
 ![](images/surf.png)
+
+## Histogram of Oriented Gradients (HOG)
+
+- The distribution of directions of gradients are used as features
+- Gradients of an image are useful because the magnitude of gradients is large
+  around edges and corners 
+- The gradient removes a lot of non-essential information (e.g. constant
+  colored background)
+
+-----------------
+
+```python
+# Calculate gradient
+gx = cv2.Sobel(im, cv2.CV_32F, 1, 0, ksize=1)
+gy = cv2.Sobel(im, cv2.CV_32F, 0, 1, ksize=1)
+# Python Calculate gradient magnitude and direction ( in degrees )
+mag, angle = cv2.cartToPolar(gx, gy, angleInDegrees=True)
+```
+
+----------------
+
+![](images/hog.png)
 
 # Object detection
 
@@ -400,20 +413,12 @@ image recognition and object detection algorithms for your applications, you
 may be missing out on a huge opportunity to get better results.
 </div>
 
-# Conclusion
+# Conclusions
 
-## First
+-------------
 
-This is an [inline link](/url), and here's [one with
-a title](http://fsf.org "click here for a good time!").
-
-------------------
-
-See [my website][].
-
-[my website]: http://foo.bar.baz
-[my label 1]: /foo/bar.html  "My title, optional"
-[my label 2]: /foo
-[my label 3]: http://fsf.org (The free software foundation)
-[my label 4]: /bar#special  'A title in single quotes'
-
+- Image preprocessing can significantly increase the performance of a
+  classification algorithm.
+- A feature descriptor represents a simplified version of an image by
+  extracting useful information and throwing away extraneous information.
+- Using feature description increases training speed compared with raw images.

@@ -84,14 +84,13 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </section>
 <section><section id="preprocessing" class="titleslide slide level1"><h1>Preprocessing</h1></section><section id="deskew" class="slide level2">
 <h2>Deskew</h2>
-<p>Align an image to a reference assits the classification algorithm <a href="http://docs.opencv.org/trunk/dd/d3b/tutorial_py_svm_opencv.html"><span class="math inline"><em></em><sup>1</sup></span></a></p>
+<p>Align an image to a reference assits the classification algorithm <a href="http://docs.opencv.org/trunk/dd/d3b/tutorial_py_svm_opencv.html">1</a>, <a href="https://www.learnopencv.com/handwritten-digits-classification-an-opencv-c-python-tutorial/">2</a>.</p>
 <figure>
 <img src="images/deskew1.jpg" style="height:100.0%" />
 </figure>
-<p><a href="https://www.learnopencv.com/handwritten-digits-classification-an-opencv-c-python-tutorial/">2</a></p>
 <aside class="notes">
-<p>People often think of a learning algorithm as a block box. In reality, you can assist the algorithm. If you are building a face recognition system, aligning the images to a reference face leads to improvement. A typical alignment operation uses a facial feature detector to align the eyes in every image.</p>
-<p>Pour le cas de digits, aligner les numéros améliore les résultats. L'inclination de l'écriture peut être corrigé. Ansi l'algorithme ne doit pas apprendre cette variation entre les chiffres.</p>
+<p>Il est possible d'aider l'algorithme d'apprentissage. Pour le cas de reconnaissance de visage par exemple, aligner les images par rapport par rapport à la position des yeux améliore les résultats.</p>
+<p>Pour le cas de digits, aligner les numéros améliore les résultats. L'inclination de l'écriture peut être corrigé. Ainsi l'algorithme ne doit pas apprendre cette variation entre les chiffres.</p>
 </aside>
 </section><section class="slide level2">
 
@@ -155,7 +154,7 @@ cv2.imwrite(<span class="st">&#39;res.png&#39;</span>,res)</code></pre></div>
 <li>Histogram would confine to a small region (unless there is noise).</li>
 <li>If noise is there, it will be amplified. To avoid this, contrast limiting is applied.</li>
 <li>If any histogram bin is above the specified contrast limit (by default 40 in OpenCV), those pixels are clipped and distributed uniformly to other bins before applying histogram equalization.</li>
-<li>After equalization, to remove artifacts in tile borders, bilinear interpolation is applied.</li>
+<li>After equalization, to remove artefacts in tile borders, bilinear interpolation is applied.</li>
 </ul>
 </section><section class="slide level2">
 
@@ -165,14 +164,14 @@ cv2.imwrite(<span class="st">&#39;res.png&#39;</span>,res)</code></pre></div>
 </section><section class="slide level2">
 
 <h3 id="example-using-fishes">Example using fishes</h3>
-<p>Gray scale</p>
+<p>Gray scale, <a href="http://docs.opencv.org/2.4/doc/tutorials/imgproc/histograms/histogram_calculation/histogram_calculation.html">doc histrogram opencv</a>.</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Read image</span>
 src <span class="op">=</span> cv2.imread(<span class="st">&quot;img_07473.jpg&quot;</span>, cv2.IMREAD_GRAYSCALE)<span class="op">;</span>
 hist <span class="op">=</span> cv2.calcHist(src,[<span class="dv">0</span>],<span class="va">None</span>,[<span class="dv">256</span>],[<span class="dv">0</span>,<span class="dv">256</span>])
 <span class="co"># Histogram equalization</span>
 equ <span class="op">=</span> cv2.equalizeHist(src)
 equ_hit <span class="op">=</span> cv2.calcHist(equ,[<span class="dv">0</span>],<span class="va">None</span>,[<span class="dv">256</span>],[<span class="dv">0</span>,<span class="dv">256</span>])
-<span class="co"># Create a CLAHE object (Arguments are optional).</span>
+<span class="co"># Create a AdaptativeHistogramEqualization object</span>
 clahe <span class="op">=</span> cv2.createCLAHE(clipLimit<span class="op">=</span><span class="fl">2.0</span>, tileGridSize<span class="op">=</span>(<span class="dv">4</span>,<span class="dv">4</span>))
 cl1 <span class="op">=</span> clahe.<span class="bu">apply</span>(src)
 cl1_hist <span class="op">=</span> cv2.calcHist(cl1,[<span class="dv">0</span>],<span class="va">None</span>,[<span class="dv">256</span>],[<span class="dv">0</span>,<span class="dv">256</span>])</code></pre></div>
@@ -185,9 +184,9 @@ cl1_hist <span class="op">=</span> cv2.calcHist(cl1,[<span class="dv">0</span>],
 
 <h3 id="histogram-equalization-for-color-images">Histogram equalization for color images</h3>
 <ul>
-<li>Histogram equalization is that it's a nonlinear process.</li>
+<li>Histogram equalization is a nonlinear process.</li>
 <li>The concept of histogram equalization is only applicable to the intensity values in the image.</li>
-<li>Convert it to a color space where intensity is separated from the color information (i.e. <strong>YUV</strong> color space)</li>
+<li>Convert it to a color space where intensity is separated from the color information (i.e. <a href="https://en.wikipedia.org/wiki/YUV"><strong>YUV</strong></a> color space)</li>
 <li>Equalize the Y-channel and combine it with the other two channels.</li>
 </ul>
 <aside class="notes">
@@ -252,36 +251,32 @@ cv2.imwrite(<span class="st">&quot;opencv-thresh-tozero.jpg&quot;</span>, dst)<s
 <span class="co"># Thresholding using THRESH_TOZERO_INV</span>
 th, dst <span class="op">=</span> cv2.threshold(src,<span class="dv">127</span>,<span class="dv">255</span>, cv2.THRESH_TOZERO_INV)<span class="op">;</span>
 cv2.imwrite(<span class="st">&quot;opencv-thresh-to-zero-inv.jpg&quot;</span>, dst)<span class="op">;</span></code></pre></div>
-</section><section id="adaptative-thresholding" class="slide level2">
-<h2>Adaptative thresholding</h2>
+</section><section id="adaptive-thresholding" class="slide level2">
+<h2>Adaptive thresholding</h2>
 <ul>
 <li>The algorithm calculate the threshold for a small regions of the image.</li>
 <li>Different thresholds for different regions of the same image</li>
-<li>Gives us better results for images with varying illumination.</li>
+<li>Gives better results for images with varying illumination.</li>
 </ul>
 </section><section class="slide level2">
 
-<p><code>cv2.ADAPTIVE_THRESH_MEAN_C</code> : threshold value is the mean of neighbourhood area. <code>cv2.ADAPTIVE_THRESH_GAUSSIAN_C</code> : threshold value is the weighted sum of neighbourhood values where weights are a gaussian window.</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">th2 <span class="op">=</span> cv2.adaptiveThreshold(img,<span class="dv">255</span>,cv2.ADAPTIVE_THRESH_MEAN_C,<span class="op">\</span>
-            cv2.THRESH_BINARY,<span class="dv">11</span>,<span class="dv">2</span>)
-th3 <span class="op">=</span> cv2.adaptiveThreshold(img,<span class="dv">255</span>,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,<span class="op">\</span>
-            cv2.THRESH_BINARY,<span class="dv">11</span>,<span class="dv">2</span>)</code></pre></div>
+<figure>
+<img src="images/ada_threshold.jpeg" />
+</figure>
 </section><section id="otsus-binarization" class="slide level2">
 <h2>Otsu’s Binarization</h2>
 <ul>
-<li>Automatically calculates a threshold value from image histogram for a bimodal image</li>
-<li>Otsu <a href="http://www.bogotobogo.com/python/OpenCV_Python/python_opencv3_Image_Global_Thresholding_Adaptive_Thresholding_Otsus_Binarization_Segmentations.php">1</a></li>
+<li>Automatically finds a threshold value which lies in between two peaks such that variances to both classes are minimum</li>
+<li><a href="http://www.bogotobogo.com/python/OpenCV_Python/python_opencv3_Image_Global_Thresholding_Adaptive_Thresholding_Otsus_Binarization_Segmentations.php">Otsu</a></li>
 </ul>
+<aside class="notes">
+<p>But consider a bimodal image (In simple words, bimodal image is an image whose histogram has two peaks). For that image, we can approximately take a value in the middle of those peaks as threshold value, right ? That is what Otsu binarization does. So in simple words, it automatically calculates a threshold value from image histogram for a bimodal image. (For images which are not bimodal, binarization won’t be accurate.)</p>
+</aside>
 </section><section class="slide level2">
 
-<p><code>cv2.threshold()</code> function is used, but pass an extra flag, <code>cv2.THRESH_OTSU</code></p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># global thresholding</span>
-ret1,th1 <span class="op">=</span> cv2.threshold(img,<span class="dv">127</span>,<span class="dv">255</span>,cv2.THRESH_BINARY)
-<span class="co"># Otsu&#39;s thresholding</span>
-ret2,th2 <span class="op">=</span> cv2.threshold(img,<span class="dv">0</span>,<span class="dv">255</span>,cv2.THRESH_BINARY<span class="op">+</span>cv2.THRESH_OTSU)
-<span class="co"># Otsu&#39;s thresholding after Gaussian filtering</span>
-blur <span class="op">=</span> cv2.GaussianBlur(img,(<span class="dv">5</span>,<span class="dv">5</span>),<span class="dv">0</span>)
-ret3,th3 <span class="op">=</span> cv2.threshold(blur,<span class="dv">0</span>,<span class="dv">255</span>,cv2.THRESH_BINARY<span class="op">+</span>cv2.THRESH_OTSU)</code></pre></div>
+<figure>
+<img src="images/thresholding.png" />
+</figure>
 </section></section>
 <section><section id="feature-extraction" class="titleslide slide level1"><h1>Feature Extraction</h1></section><section id="understanding-features" class="slide level2">
 <h2>Understanding features</h2>
@@ -312,7 +307,7 @@ ret3,th3 <span class="op">=</span> cv2.threshold(blur,<span class="dv">0</span>,
 <h3 id="feature-extractor">Feature extractor</h3>
 <ul>
 <li>A feature descriptor is a representation of an image that simplifies the image by extracting useful information and throwing away extraneous information.</li>
-<li>A feature descriptor converts an image of size width x height x 3 (channels) to a feature vector. (For HOG, the input image is of size 64 x 128 x 3 and the output feature vector is of length 3780)</li>
+<li>A feature descriptor converts an image of size <code>width x height x 3</code> (channels) to a feature vector. (For HOG, the input image is of size <code>64 x 128 x 3</code> and the output feature vector is of length 3780)</li>
 </ul>
 <aside class="notes">
 <p>The feature vector is not useful for the purpose of viewing the image. But, it is very useful for tasks like image recognition and object detection.</p>
@@ -323,7 +318,7 @@ ret3,th3 <span class="op">=</span> cv2.threshold(blur,<span class="dv">0</span>,
 <li>Extract keypoints and compute its descriptor</li>
 <li>Invariant to uniform scaling, orientation and illumination changes</li>
 <li>Orientation is assigned to each keypoint to achieve invariance to image rotation</li>
-<li>Descriptors are vectors of 128 values, calculated from orientation histogram over the neighbourhood. <a href="http://docs.opencv.org/master/da/df5/tutorial_py_sift_intro.html">docs.opencv</a></li>
+<li>Descriptors are vectors of 128 values, calculated from orientation histogram over the neighbourhood, <a href="http://docs.opencv.org/master/da/df5/tutorial_py_sift_intro.html">docs.opencv</a>.</li>
 </ul>
 </section><section class="slide level2">
 
@@ -336,12 +331,12 @@ plt.savefig(<span class="st">&quot;sift.png&quot;</span>)</code></pre></div>
 <figure>
 <img src="images/sift.png" />
 </figure>
-<aside class="notes">
+<div class="notes">
 <p>Each keypoint is a special structure which has many attributes like its (x,y) coordinates, size of the meaningful neighbourhood, angle which specifies its orientation, response that specifies strength of keypoints etc.</p>
 <ul>
-<li>Orientation: A neigbourhood is taken around the keypoint location depending on the scale, and the gradient magnitude and direction is calculated in that region</li>
+<li>Orientation: A neighbourhood is taken around the keypoint location depending on the scale, and the gradient magnitude and direction is calculated in that region
+</div></li>
 </ul>
-</aside>
 </section><section id="speeded-up-robust-features-surf" class="slide level2">
 <h2>Speeded Up Robust Features (SURF)</h2>
 <ul>
@@ -357,6 +352,25 @@ img2 <span class="op">=</span> cv2.drawKeypoints(img,kp,<span class="va">None</s
 <figure>
 <img src="images/surf.png" />
 </figure>
+</section><section id="histogram-of-oriented-gradients-hog" class="slide level2">
+<h2>Histogram of Oriented Gradients (HOG)</h2>
+<ul>
+<li>The distribution of directions of gradients are used as features</li>
+<li>Gradients of an image are useful because the magnitude of gradients is large around edges and corners</li>
+<li>The gradient removes a lot of non-essential information (e.g. constant colored background)</li>
+</ul>
+</section><section class="slide level2">
+
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Calculate gradient</span>
+gx <span class="op">=</span> cv2.Sobel(im, cv2.CV_32F, <span class="dv">1</span>, <span class="dv">0</span>, ksize<span class="op">=</span><span class="dv">1</span>)
+gy <span class="op">=</span> cv2.Sobel(im, cv2.CV_32F, <span class="dv">0</span>, <span class="dv">1</span>, ksize<span class="op">=</span><span class="dv">1</span>)
+<span class="co"># Python Calculate gradient magnitude and direction ( in degrees )</span>
+mag, angle <span class="op">=</span> cv2.cartToPolar(gx, gy, angleInDegrees<span class="op">=</span><span class="va">True</span>)</code></pre></div>
+</section><section class="slide level2">
+
+<figure>
+<img src="images/hog.png" />
+</figure>
 </section></section>
 <section><section id="object-detection" class="titleslide slide level1"><h1>Object detection</h1></section><section id="libraries" class="slide level2">
 <h2>Libraries</h2>
@@ -370,12 +384,13 @@ img2 <span class="op">=</span> cv2.drawKeypoints(img,kp,<span class="va">None</s
 <p>With such huge success in image recognition, Deep Learning based object detection was inevitable. Techniques like Faster R-CNN produce jaw-dropping results over multiple object classes. We will learn about these in later posts, but for now keep in mind that if you have not looked at Deep Learning based image recognition and object detection algorithms for your applications, you may be missing out on a huge opportunity to get better results.</p>
 </aside>
 </section></section>
-<section><section id="conclusion" class="titleslide slide level1"><h1>Conclusion</h1></section><section id="first" class="slide level2">
-<h2>First</h2>
-<p>This is an <a href="/url">inline link</a>, and here's <a href="http://fsf.org" title="click here for a good time!">one with a title</a>.</p>
-</section><section class="slide level2">
+<section><section id="conclusions" class="titleslide slide level1"><h1>Conclusions</h1></section><section class="slide level2">
 
-<p>See <a href="http://foo.bar.baz">my website</a>.</p>
+<ul>
+<li>Image preprocessing can significantly increase the performance of a classification algorithm.</li>
+<li>A feature descriptor represents a simplified version of an image by extracting useful information and throwing away extraneous information.</li>
+<li>Using feature description increases training speed compared with raw images.</li>
+</ul>
 </section></section>
     </div>
   </div>

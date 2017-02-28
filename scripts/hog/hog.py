@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 
 # Read image
 #im = cv2.imread('img_00898.jpg')
-im = cv2.imread('img_07473.jpg')
+#im = cv2.imread('img_07473.jpg')
+im = cv2.imread('amelioration.jpg')
 im = np.float32(im) / 255.0
  
 # Calculate gradient 
