@@ -100,7 +100,7 @@ cv2.imwrite('res.png',res)
 - The background contrast improves after histogram equalization, but the face
   of statue lost most of the information there due to over-brightness.
 
-![](images/clahe_1.svg){ height=30% }
+![](images/clahe_1.png){ height=30% }
 [1](http://docs.opencv.org/3.1.0/d5/daf/tutorial_py_histogram_equalization.html)
 
 
@@ -116,7 +116,7 @@ cv2.imwrite('res.png',res)
 
 -------
 
-![](images/clahe_2.svg)
+![](images/clahe_2.png)
 
 --------
 
@@ -392,7 +392,7 @@ mag, angle = cv2.cartToPolar(gx, gy, angleInDegrees=True)
 ## Libraries
 
 - Dlib [Object_detector](http://dlib.net/ml.html#structural_object_detection_trainer)
-- Opencv [Cascade Clssfifier](http://docs.opencv.org/master/d7/d8b/tutorial_py_face_detection.html)
+- Opencv [Cascade Classfier](http://docs.opencv.org/master/d7/d8b/tutorial_py_face_detection.html)
 - Deep learning
 
 <div class="notes">
