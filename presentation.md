@@ -1,7 +1,7 @@
-# Partage de connaissance
-## Cristian Perez
-### 28 février 2017
-
+---
+title: Partage de connaissance
+author: Cristian Perez
+date: 28 février 2017
 ---
 
 ## Anatomy of an image classifier
@@ -13,11 +13,7 @@
 - Deep Learning based algorithms bypass the feature extraction step completely
 </div>
 
----
-
 # Preprocessing 
-
-+++
 
 ## Deskew
 
@@ -37,7 +33,7 @@ L'inclination de l'écriture peut être corrigé.  Ainsi l'algorithme ne doit pa
 apprendre cette variation entre les chiffres.
 </div>
 
-+++
+-------
 
 Deskewing simple grayscale images can be achieved using image moments (distance and intensity of pixels). 
 
