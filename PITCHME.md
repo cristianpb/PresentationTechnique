@@ -6,7 +6,7 @@
 
 ## Anatomy of an image classifier
 
-![](images/image-classification-pipeline.jpg){ width=100% }
+![](images/image-classification-pipeline.jpg)
 
 ---
 
@@ -20,7 +20,7 @@ Align an image to a reference assits the classification algorithm
 [1](http://docs.opencv.org/trunk/dd/d3b/tutorial_py_svm_opencv.html),
 [2](https://www.learnopencv.com/handwritten-digits-classification-an-opencv-c-python-tutorial/).
 
-![](images/deskew1.jpg){ height=100% }
+![](images/deskew1.jpg)
 
 +++
 
@@ -54,7 +54,7 @@ def deskew(img):
 
 Increase image contrast using the image's histogram.
 
-![](images/histogram_equalization.png){ width=100% }
+![](images/histogram_equalization.png)
 
 
 +++
@@ -78,7 +78,7 @@ cv2.imwrite('res.png',res)
 - The background contrast improves after histogram equalization, but the face
   of statue lost most of the information there due to over-brightness.
 
-![](images/clahe_1.png){ height=30% }
+![](images/clahe_1.png)
 [1](http://docs.opencv.org/3.1.0/d5/daf/tutorial_py_histogram_equalization.html)
 
 +++
@@ -160,7 +160,7 @@ cl1_hist = cv2.calcHist(img_yuv,[0],None,[256],[0,256])
 - Method of image segmentation
 - If pixel value is greater than a threshold value, it is assigned one value, else it is assigned another value.
 
-![](images/threshold.png){ height=80% }
+![](images/threshold.png)
 
 +++
 
@@ -205,6 +205,8 @@ cv2.imwrite("opencv-thresh-to-zero-inv.jpg", dst);
 ---
 
 # Feature Extraction
+
++++
 
 ## Understanding features
 
@@ -295,13 +297,13 @@ gy = cv2.Sobel(im, cv2.CV_32F, 0, 1, ksize=1)
 mag, angle = cv2.cartToPolar(gx, gy, angleInDegrees=True)
 ```
 
-+++
-
 ![](images/hog.png)
 
 ---
 
 # Object detection
+
++++
 
 ## Libraries
 
